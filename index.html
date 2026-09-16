@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全台糖尿病院所品質查詢與比對器 (115年Q1)</title>
+  <meta name="description" content="全台7,765家糖尿病院所即時篩選、照護品質排序與評比。民眾輕鬆找身邊優質慢病診所，醫師一鍵勾選最多10家產生Telegram與Line Bot品質比對指令。">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-hover: #0f766e;
+      --primary-light: #ccfbf1;
+      --primary-dark: #115e59;
+      --secondary: #2563eb;
+      --secondary-light: #dbeafe;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --line-green: #06c755;
+      --line-dark: #05a346;
+      --tg-blue: #229ed9;
+      --tg-dark: #1a85b8;
+      
+      --bg: #f8fafc;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-sub: #475569;
+      
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --radius-full: 9999px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #090d16;
+      --card-bg: rgba(22, 28, 45, 0.9);
+      --card-border: #2e384d;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-sub: #cbd5e1;
+      --primary-light: rgba(13, 148, 136, 0.2);
+      --secondary-light: rgba(37, 99, 235, 0.2);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-bottom: 120px;
+      transition: background-color 0.3s ease;
+    }
+
+    /* 頂部導航列 */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 20px;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .brand-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      margin-left: 6px;
+    }
+    [data-theme="dark"] .brand-badge { color: #5eead4; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-icon {
+      background: none;
+      border: 1px solid var(--card-border);
+      color: var(--text-sub);
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: var(--transition);
+    }
+    .btn-icon:hover {
+      background: var(--card-border);
+      color: var(--text);
+    }
+
+    /* 雙模式切換器 (Tab Switcher) */
+    .mode-switch-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 20px auto 14px;
+      padding: 0 16px;
+      max-width: 600px;
+    }
+    .mode-switch {
+      display: flex;
+      background: var(--card-border);
+      padding: 4px;
+      border-radius: var(--radius-full);
+      width: 100%;
+      position: relative;
+    }
+    .mode-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .mode-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+    [data-theme="dark"] .mode-btn.active {
+      color: #2dd4bf;
+    }
+
+    /* 主容器 */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* 模式說明橫幅 */
+    .mode-banner {
+      background: linear-gradient(135deg, rgba(13, 148, 136, 0.08), rgba(37, 99, 235, 0.06));
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .mode-banner-text {
+      font-size: 0.92rem;
+      color: var(--text-sub);
+    }
+    .mode-banner-text strong {
+      color: var(--text);
+    }
+
+    /* 統計儀表板卡片 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .stat-value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 2px;
+    }
+
+    /* 控制面板 / 篩選器 */
+    .filter-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .filter-row-1 {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 850px) {
+      .filter-row-1 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 520px) {
+      .filter-row-1 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .search-box {
+      position: relative;
+    }
+    .search-input, .select-control {
+      width: 100%;
+      height: 42px;
+      padding: 8px 14px;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+    }
+    .search-input:focus, .select-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    .category-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .chip {
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid var(--card-border);
+      background: var(--bg);
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .chip:hover {
+      background: var(--card-border);
+    }
+    .chip.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* 民眾版卡片網格 (Card View) */
+    .clinic-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 16px;
+    }
+    .clinic-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .clinic-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--primary);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .clinic-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .clinic-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--secondary-light);
+      color: var(--secondary);
+      white-space: nowrap;
+    }
+    .clinic-loc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .clinic-code {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: var(--card-border);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    /* 品質指標量表 */
+    .metric-box {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+    .metric-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+    .metric-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .progress-bar {
+      height: 8px;
+      background: var(--card-border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), #3b82f6);
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+    .metric-foot {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .badge-diff {
+      font-weight: 700;
+    }
+    .badge-diff.up { color: var(--success); }
+    .badge-diff.down { color: #ef4444; }
+
+    /* 卡片動作按鈕群組 */
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-action {
+      border: none;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn-line {
+      background: var(--line-green);
+      color: #fff;
+    }
+    .btn-line:hover {
+      background: var(--line-dark);
+    }
+    .btn-tg {
+      background: var(--tg-blue);
+      color: #fff;
+    }
+    .btn-tg:hover {
+      background: var(--tg-dark);
+    }
+    .btn-copy {
+      background: var(--card-border);
+      color: var(--text);
+    }
+    .btn-copy:hover {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    /* 醫師版表格檢視 (Table View) */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+    .doctor-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    .doctor-table th {
+      background: var(--bg);
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--card-border);
+      white-space: nowrap;
+    }
+    .doctor-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--card-border);
+      color: var(--text);
+      vertical-align: middle;
+    }
+    .doctor-table tr:hover {
+      background: var(--primary-light);
+    }
+    .doctor-table tr.selected {
+      background: rgba(13, 148, 136, 0.12);
+    }
+    .custom-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* 分頁導航列 */
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+      padding: 0 4px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .page-info {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+    .page-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .page-btn {
+      min-width: 36px;
+      height: 36px;
+      padding: 0 10px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .page-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* 醫師版底部懸浮列 (Floating Action Drawer) */
+    .floating-drawer {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      width: calc(100% - 32px);
+      max-width: 900px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+      padding: 14px 20px;
+      z-index: 50;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .floating-drawer.show {
+      transform: translateX(-50%) translateY(0);
+    }
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .drawer-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .counter-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+    }
+    .selected-chips-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 72px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      padding: 4px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+    }
+    .selected-chip {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    [data-theme="dark"] .selected-chip { color: #5eead4; }
+    .selected-chip-remove {
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 11px;
+    }
+    .drawer-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .drawer-btn {
+      flex: 1;
+      min-width: 140px;
+      height: 42px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .drawer-btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .drawer-btn-primary:hover { background: var(--primary-hover); }
+    .drawer-btn-tg {
+      background: var(--tg-blue);
+      color: #fff;
+    }
+    .drawer-btn-tg:hover { background: var(--tg-dark); }
+    .drawer-btn-clear {
+      background: var(--card-border);
+      color: var(--text-sub);
+      max-width: 100px;
+    }
+
+    /* 吐司通知 Toast */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(-12px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .toast-success { background: #065f46; border-left: 4px solid #34d399; }
+    .toast-info { background: #1e293b; border-left: 4px solid var(--primary); }
+
+    /* 模態彈窗 (教學彈窗) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 650px;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .guide-step {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content h4 {
+      font-size: 0.98rem;
+      margin-bottom: 4px;
+    }
+    .step-content p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .step-code {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      margin-top: 6px;
+      word-break: break-all;
+    }
+
+    /* 空狀態 */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部導航 -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">🩸</div>
+        <div>
+          <span class="brand-title">全台糖尿病院所品質查詢器</span>
+          <span class="brand-badge">115年 Q1</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button class="btn-icon" onclick="openDeployGuide()" title="免費發布至 GitHub/網頁教學">🚀</button>
+        <button class="btn-icon" onclick="openSettingsModal()" title="自訂機器人設定">⚙️</button>
+        <button class="btn-icon" id="themeToggle" onclick="toggleTheme()" title="切換深色/淺色模式">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 雙模式切換器 -->
+  <div class="mode-switch-wrapper">
+    <div class="mode-switch">
+      <button class="mode-btn active" id="btnModePublic" onclick="setMode('public')">
+        <span>🟢</span> 民眾版 (找好診所 · 單選複製)
+      </button>
+      <button class="mode-btn" id="btnModeDoctor" onclick="setMode('doctor')">
+        <span>👨‍⚕️</span> 醫師版 (品質比對 · 勾選上限10家)
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    
+    <!-- 模式說明橫幅 -->
+    <div class="mode-banner" id="modeBanner">
+      <div class="mode-banner-text" id="modeBannerText">
+        🟢 <strong>【民眾模式】</strong>：適合民眾尋找在地優質糖尿病院所。點擊任一院所可<strong>複製單一代碼</strong>，或一鍵開啟 <strong>LINE Bot 查詢品質</strong>！
+      </div>
+    </div>
+
+    <!-- 統計概況儀表板 -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">符合條件院所</div>
+        <div class="stat-value" id="statCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">平均加入照護率</div>
+        <div class="stat-value" id="statAvgRate">0.0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">糖尿病總收案人數</div>
+        <div class="stat-value" id="statTotalPatients">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">收案第一名院所</div>
+        <div class="stat-value" id="statTopClinic" style="font-size: 1.1rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">-</div>
+      </div>
+    </div>
+
+    <!-- 篩選器與控制面板 -->
+    <div class="filter-panel">
+      <div class="filter-row-1">
+        <div class="input-group search-box">
+          <label class="input-label" for="keywordInput">🔍 關鍵字搜尋 (院所名稱或 10 碼代碼)</label>
+          <input type="text" id="keywordInput" class="search-input" placeholder="例如：衛康、游能俊 或 3501195270..." oninput="onFilterChange()">
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="citySelect">📍 選擇縣市</label>
+          <select id="citySelect" class="select-control" onchange="onCityChange()">
+            <option value="">全台灣 (全部縣市)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="distSelect">🏘️ 行政區</label>
+          <select id="distSelect" class="select-control" onchange="onFilterChange()">
+            <option value="">全部區域</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="sortSelect">⚡ 排序方式</label>
+          <select id="sortSelect" class="select-control" onchange="onFilterChange()">
+            <option value="rate_desc">照護加入率 (高 ➔ 低)</option>
+            <option value="num_desc">收案總人數 (多 ➔ 少)</option>
+            <option value="rk_rate_asc">全國同級指標排名 (前 ➔ 後)</option>
+            <option value="rk_vol_asc">全國同級規模排名 (前 ➔ 後)</option>
+            <option value="den_desc">糖尿病患者總數 (多 ➔ 少)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 特約類別篩選 Chips -->
+      <div class="category-chips">
+        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-right: 4px;">院所層級：</span>
+        <button class="chip active" data-cat="ALL" onclick="setCategory('ALL')">全部層級</button>
+        <button class="chip" data-cat="診所" onclick="setCategory('診所')">基層診所 (7,352)</button>
+        <button class="chip" data-cat="地區醫院" onclick="setCategory('地區醫院')">地區醫院 (306)</button>
+        <button class="chip" data-cat="區域醫院" onclick="setCategory('區域醫院')">區域醫院 (84)</button>
+        <button class="chip" data-cat="醫學中心" onclick="setCategory('醫學中心')">醫學中心 (23)</button>
+      </div>
+    </div>
+
+    <!-- 列表檢視區域 (民眾版卡片 / 醫師版表格) -->
+    <div id="contentContainer">
+      <!-- 動態載入卡片或表格 -->
+    </div>
+
+    <!-- 分頁導航 -->
+    <div class="pagination-bar" id="paginationBar">
+      <div class="page-info" id="pageInfo">顯示第 0 筆至 0 筆，共 0 筆</div>
+      <div class="page-btns" id="pageButtons"></div>
+    </div>
+
+  </div>
+
+  <!-- 醫師版底部懸浮操作面板 (Drawer) -->
+  <div class="floating-drawer" id="floatingDrawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <span>👨‍⚕️ 醫師品質比對清單</span>
+        <span class="counter-badge" id="selectedCountBadge">已選 0 / 10 家</span>
+      </div>
+      <button class="drawer-btn drawer-btn-clear" onclick="clearSelected()">清空</button>
+    </div>
+    
+    <!-- 已選標籤預覽 -->
+    <div class="selected-chips-box" id="selectedChipsBox"></div>
+
+    <!-- 一鍵操作按鈕群組 -->
+    <div class="drawer-actions">
+      <button class="drawer-btn drawer-btn-primary" onclick="copyQualityCommand()">
+        📋 複製 /quality 指令
+      </button>
+      <button class="drawer-btn btn-copy" onclick="copyRawCodes()">
+        📄 複製純代碼 (空白分開)
+      </button>
+      <a class="drawer-btn drawer-btn-tg" id="drawerTgBtn" href="https://t.me/WellcomeClinic_bot" target="_blank">
+        🔵 開啟 Telegram 機器人
+      </a>
+      <a class="drawer-btn btn-line" id="drawerLineBtn" href="https://line.me/R/" target="_blank">
+        🟢 開啟 LINE 官方帳號
+      </a>
+    </div>
+  </div>
+
+  <!-- 吐司通知 -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- 免費部署教學 Modal -->
+  <div class="modal-backdrop" id="deployModal" onclick="closeDeployGuide(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">🚀 100% 永久免費網頁發布指南</h3>
+        <button class="modal-close" onclick="closeDeployGuide()">&times;</button>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 18px;">
+        本系統為純靜態單一頁面（無任何伺服器成本），可以直接放上免費的雲端平台，全世界任何人都能隨時用手機點開使用！
+      </p>
+
+      <div class="guide-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>方案 A：使用 GitHub Pages（最推薦 · 3 分鐘完成）</h4>
+          <p>1. 在 GitHub 建立一個公開倉庫（如 <code>dm-quality-finder</code>）。<br>
+             2. 把本目錄下的 <code>index.html</code> 與 <code>dm_clinics_data.js</code> 上傳。<br>
+             3. 進入 <strong>Settings ➔ Pages</strong>，選擇 <code>main</code> 分支儲存，即可獲得免費專屬網址！</p>
+          <div class="step-code">網址範例：https://&lt;您的GitHub帳號&gt;.github.io/dm-quality-finder/</div>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>方案 B：使用 Cloudflare Pages（免打指令 · 拖拉即用）</h4>
+          <p>進入 Cloudflare 官網 ➔ Pages ➔ Direct Upload，將此資料夾拖拉放進瀏覽器，即可取得全球極速 CDN 免費網址，支援自訂網域！</p>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>方案 C：電腦本機直接雙擊開啟</h4>
+          <p>只要雙擊 <code>index.html</code>，無需架設任何 Apache/Nginx 伺服器，即可完全離線瀏覽 7,765 家院所數據！</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 機器人設定 Modal -->
+  <div class="modal-backdrop" id="settingsModal" onclick="closeSettingsModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ 機器人串接參數設定</h3>
+        <button class="modal-close" onclick="closeSettingsModal()">&times;</button>
+      </div>
+      <div class="input-group" style="margin-bottom: 14px;">
+        <label class="input-label" for="tgBotInput">Telegram Bot Username (不含 @)</label>
+        <input type="text" id="tgBotInput" class="search-input" value="WellcomeClinic_bot">
+      </div>
+      <div class="input-group" style="margin-bottom: 14px;">
+        <label class="input-label" for="lineOaInput">LINE 官方帳號 ID (例如：@weikang 或留空)</label>
+        <input type="text" id="lineOaInput" class="search-input" placeholder="例如：@23092807 或 line.23092807.com">
+      </div>
+      <button class="btn-action btn-line" style="width: 100%; height: 42px; margin-top: 10px;" onclick="saveSettings()">儲存設定並套用</button>
+    </div>
+  </div>
+
+  <!-- 引用已壓縮萃取好的資料檔 -->
+  <script src="dm_clinics_data.js"></script>
+
+  <script>
+    // 預設設定
+    let currentMode = 'public'; // 'public' | 'doctor'
+    let currentCategory = 'ALL';
+    let currentPage = 1;
+    let pageSize = 24;
+    let selectedClinics = new Map(); // code -> { code, name, city, dist, rate, num }
+    const MAX_DOCTOR_SELECT = 10;
+
+    let TG_BOT_NAME = localStorage.getItem('tg_bot') || 'WellcomeClinic_bot';
+    let LINE_OA_ID = localStorage.getItem('line_oa') || '';
+
+    // 資料解析對照
+    // item: [0:code, 1:name, 2:city, 3:dist, 4:category, 5:num, 6:den, 7:rk_vol, 8:rk_rate, 9:rate, 10:div_avg]
+    const RAW_DATA = window.DM_CLINICS_DATA || [];
+    const META = window.DM_DATA_META || { cities: {} };
+
+    let filteredData = [];
+
+    // 初始化
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initCityDropdown();
+      applyUrlParams();
+      filterAndRender();
+    });
+
+    // 主題初始化與切換
+    function initTheme() {
+      const saved = localStorage.getItem('dm_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('themeToggle').textContent = saved === 'dark' ? '☀️' : '🌙';
+    }
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('dm_theme', next);
+      document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+
+    // 縣市選單初始化
+    function initCityDropdown() {
+      const citySelect = document.getElementById('citySelect');
+      const cities = Object.keys(META.cities || {}).sort();
+      cities.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = `${c} (${META.cities[c].length} 區)`;
+        citySelect.appendChild(opt);
+      });
+    }
+
+    // 縣市連動行政區
+    function onCityChange() {
+      const city = document.getElementById('citySelect').value;
+      const distSelect = document.getElementById('distSelect');
+      distSelect.innerHTML = '<option value="">全部區域</option>';
+      
+      if (city && META.cities[city]) {
+        META.cities[city].forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d;
+          opt.textContent = d;
+          distSelect.appendChild(opt);
+        });
+      }
+      onFilterChange();
+    }
+
+    // 模式切換
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('btnModePublic').classList.toggle('active', mode === 'public');
+      document.getElementById('btnModeDoctor').classList.toggle('active', mode === 'doctor');
+      
+      const banner = document.getElementById('modeBannerText');
+      if (mode === 'public') {
+        banner.innerHTML = '🟢 <strong>【民眾模式】</strong>：適合民眾尋找在地優質糖尿病院所。點擊任一院所可<strong>複製單一代碼</strong>，或一鍵開啟 <strong>LINE Bot 查詢品質</strong>！';
+        pageSize = 24;
+      } else {
+        banner.innerHTML = '👨‍⚕️ <strong>【醫師模式】</strong>：提供詳細同儕排名數據。點擊核取方塊<strong>自由勾選 1~10 家院所</strong>，底端常駐操作列將自動為您生成 <code>/quality</code> 比對指令！';
+        pageSize = 30;
+      }
+      currentPage = 1;
+      updateDrawerVisibility();
+      renderContent();
+    }
+
+    // 特約類別篩選
+    function setCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-chips .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.cat === cat);
+      });
+      onFilterChange();
+    }
+
+    // 篩選與排序觸發
+    function onFilterChange() {
+      currentPage = 1;
+      filterAndRender();
+    }
+
+    // 核心資料過濾與排序
+    function filterAndRender() {
+      const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
+      const city = document.getElementById('citySelect').value;
+      const dist = document.getElementById('distSelect').value;
+      const sortBy = document.getElementById('sortSelect').value;
+
+      filteredData = RAW_DATA.filter(item => {
+        // item: [0:code, 1:name, 2:city, 3:dist, 4:category, 5:num, 6:den, 7:rk_vol, 8:rk_rate, 9:rate, 10:div_avg]
+        if (city && item[2] !== city) return false;
+        if (dist && item[3] !== dist) return false;
+        if (currentCategory !== 'ALL' && item[4] !== currentCategory) return false;
+        
+        if (keyword) {
+          const matchCode = item[0].toLowerCase().includes(keyword);
+          const matchName = item[1].toLowerCase().includes(keyword);
+          if (!matchCode && !matchName) return false;
+        }
+        return true;
+      });
+
+      // 排序
+      filteredData.sort((a, b) => {
+        switch (sortBy) {
+          case 'rate_desc': return b[9] - a[9] || b[5] - a[5];
+          case 'num_desc': return b[5] - a[5] || b[9] - a[9];
+          case 'rk_rate_asc': return (a[8] || 9999) - (b[8] || 9999);
+          case 'rk_vol_asc': return (a[7] || 9999) - (b[7] || 9999);
+          case 'den_desc': return b[6] - a[6];
+          default: return b[9] - a[9];
+        }
+      });
+
+      updateStats();
+      renderContent();
+    }
+
+    // 更新統計指標卡
+    function updateStats() {
+      const count = filteredData.length;
+      document.getElementById('statCount').textContent = count.toLocaleString();
+
+      if (count > 0) {
+        const totalNum = filteredData.reduce((acc, cur) => acc + cur[5], 0);
+        const avgRate = filteredData.reduce((acc, cur) => acc + cur[9], 0) / count;
+        
+        // 找出收案最多院所
+        const topOne = [...filteredData].sort((a, b) => b[5] - a[5])[0];
+
+        document.getElementById('statAvgRate').textContent = `${avgRate.toFixed(1)}%`;
+        document.getElementById('statTotalPatients').textContent = totalNum.toLocaleString();
+        document.getElementById('statTopClinic').textContent = topOne ? `${topOne[1]} (${topOne[5]}人)` : '-';
+      } else {
+        document.getElementById('statAvgRate').textContent = '0.0%';
+        document.getElementById('statTotalPatients').textContent = '0';
+        document.getElementById('statTopClinic').textContent = '-';
+      }
+    }
+
+    // 渲染清單內容 (分流 Card vs Table)
+    function renderContent() {
+      const container = document.getElementById('contentContainer');
+      const total = filteredData.length;
+
+      if (total === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <h3>查無符合條件的院所</h3>
+            <p>請嘗試放寬篩選條件或清除關鍵字搜尋！</p>
+          </div>
+        `;
+        document.getElementById('paginationBar').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('paginationBar').style.display = 'flex';
+
+      const startIndex = (currentPage - 1) * pageSize;
+      const pageItems = filteredData.slice(startIndex, startIndex + pageSize);
+
+      if (currentMode === 'public') {
+        renderPublicCards(container, pageItems);
+      } else {
+        renderDoctorTable(container, pageItems);
+      }
+
+      renderPagination(total);
+    }
+
+    // 民眾版卡片渲染
+    function renderPublicCards(container, items) {
+      let html = '<div class="clinic-cards-grid">';
+      items.forEach(item => {
+        const [code, name, city, dist, category, num, den, rk_vol, rk_rate, rate, div_avg] = item;
+        const diff = (rate - div_avg).toFixed(1);
+        const diffText = diff >= 0 ? `+${diff}%` : `${diff}%`;
+        const diffClass = diff >= 0 ? 'up' : 'down';
+        const progressWidth = Math.min(Math.max(rate, 0), 100);
+
+        html += `
+          <div class="clinic-card">
+            <div>
+              <div class="card-top">
+                <div class="clinic-name">${escapeHtml(name)}</div>
+                <span class="clinic-tag">${escapeHtml(category)}</span>
+              </div>
+              <div class="clinic-loc">
+                <span>📍 ${escapeHtml(city)}${escapeHtml(dist)}</span>
+                <span class="clinic-code">${code}</span>
+              </div>
+
+              <div class="metric-box">
+                <div class="metric-row">
+                  <span class="metric-title">糖尿病加入照護率</span>
+                  <span class="metric-val">${rate.toFixed(1)}%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${progressWidth}%;"></div>
+                </div>
+                <div class="metric-foot">
+                  <span>分區平均：${div_avg.toFixed(1)}%</span>
+                  <span class="badge-diff ${diffClass}">相差：${diffText}</span>
+                </div>
+                <div style="margin-top: 6px; font-size: 0.78rem; color: var(--text-muted);">
+                  收案人數：<strong>${num.toLocaleString()}</strong> 人 / 總糖尿病患：${den.toLocaleString()} 人
+                </div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button class="btn-action btn-line" onclick="openLineForSingle('${code}', '${escapeJs(name)}')">
+                🟢 LINE 查品質
+              </button>
+              <button class="btn-action btn-tg" onclick="openTgForSingle('${code}', '${escapeJs(name)}')">
+                🔵 TG 查品質
+              </button>
+              <button class="btn-action btn-copy" onclick="copyCode('${code}')">
+                📋 複製代碼
+              </button>
+              <a class="btn-action btn-copy" href="https://info.nhi.gov.tw/INAE1000/INAE1000HospDetail?id=${code}" target="_blank">
+                🌐 健保明細
+              </a>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // 醫師版表格渲染
+    function renderDoctorTable(container, items) {
+      let html = `
+        <div class="table-container">
+          <table class="doctor-table">
+            <thead>
+              <tr>
+                <th style="width: 44px; text-align: center;">選取</th>
+                <th>機構名稱</th>
+                <th>代碼</th>
+                <th>地區</th>
+                <th>層級</th>
+                <th style="text-align: right;">照護率</th>
+                <th style="text-align: right;">指標排名</th>
+                <th style="text-align: right;">收案數</th>
+                <th style="text-align: right;">規模排名</th>
+                <th style="text-align: center;">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      items.forEach(item => {
+        const [code, name, city, dist, category, num, den, rk_vol, rk_rate, rate, div_avg] = item;
+        const isChecked = selectedClinics.has(code);
+        const rowClass = isChecked ? 'selected' : '';
+        const disabledAttr = (!isChecked && selectedClinics.size >= MAX_DOCTOR_SELECT) ? 'disabled' : '';
+
+        html += `
+          <tr class="${rowClass}">
+            <td style="text-align: center;">
+              <input type="checkbox" class="custom-checkbox" 
+                data-code="${code}" 
+                ${isChecked ? 'checked' : ''} 
+                ${disabledAttr}
+                onchange="toggleClinicSelect('${code}', '${escapeJs(name)}', '${escapeJs(city)}', '${escapeJs(dist)}', ${rate}, ${num}, this.checked)">
+            </td>
+            <td><strong>${escapeHtml(name)}</strong></td>
+            <td><span class="clinic-code">${code}</span></td>
+            <td>${escapeHtml(city)}${escapeHtml(dist)}</td>
+            <td><span class="clinic-tag">${escapeHtml(category)}</span></td>
+            <td style="text-align: right; font-weight: 800; color: var(--primary);">${rate.toFixed(1)}%</td>
+            <td style="text-align: right;">第 ${rk_rate || '-'} 名</td>
+            <td style="text-align: right; font-weight: 700;">${num.toLocaleString()}</td>
+            <td style="text-align: right;">第 ${rk_vol || '-'} 名</td>
+            <td style="text-align: center; white-space: nowrap;">
+              <button class="btn-icon" style="display: inline-flex; width: 30px; height: 30px;" onclick="copyCode('${code}')" title="複製代碼">📋</button>
+              <a class="btn-icon" style="display: inline-flex; width: 30px; height: 30px;" href="https://info.nhi.gov.tw/INAE1000/INAE1000HospDetail?id=${code}" target="_blank" title="健保官方明細">🌐</a>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+      container.innerHTML = html;
+    }
+
+    // 勾選/取消勾選院所 (醫師版)
+    function toggleClinicSelect(code, name, city, dist, rate, num, isChecked) {
+      if (isChecked) {
+        if (selectedClinics.size >= MAX_DOCTOR_SELECT) {
+          showToast(`⚠️ 最多僅能選取 ${MAX_DOCTOR_SELECT} 家院所進行同儕比對！`, 'info');
+          renderContent();
+          return;
+        }
+        selectedClinics.set(code, { code, name, city, dist, rate, num });
+        showToast(`已加入：${name} (${selectedClinics.size}/${MAX_DOCTOR_SELECT})`, 'success');
+      } else {
+        selectedClinics.delete(code);
+      }
+      updateDrawerVisibility();
+      renderContent();
+    }
+
+    // 移除單一已選院所
+    function removeSelected(code) {
+      selectedClinics.delete(code);
+      updateDrawerVisibility();
+      renderContent();
+    }
+
+    // 清空全部已選
+    function clearSelected() {
+      selectedClinics.clear();
+      updateDrawerVisibility();
+      renderContent();
+      showToast('已清空所有已選院所', 'info');
+    }
+
+    // 更新底部懸浮面板
+    function updateDrawerVisibility() {
+      const drawer = document.getElementById('floatingDrawer');
+      const count = selectedClinics.size;
+      
+      if (currentMode === 'doctor' && count > 0) {
+        drawer.classList.add('show');
+        document.getElementById('selectedCountBadge').textContent = `已選 ${count} / ${MAX_DOCTOR_SELECT} 家`;
+        
+        // 渲染標籤
+        const box = document.getElementById('selectedChipsBox');
+        let chipsHtml = '';
+        selectedClinics.forEach((item, code) => {
+          chipsHtml += `
+            <span class="selected-chip">
+              <span>${escapeHtml(item.name)}</span>
+              <span class="selected-chip-remove" onclick="removeSelected('${code}')">&times;</span>
+            </span>
+          `;
+        });
+        box.innerHTML = chipsHtml;
+      } else {
+        drawer.classList.remove('show');
+      }
+    }
+
+    // 複製 /quality 指令
+    function copyQualityCommand() {
+      if (selectedClinics.size === 0) return;
+      const codes = Array.from(selectedClinics.keys()).join(' ');
+      const cmd = `/quality ${codes}`;
+      copyToClipboard(cmd, `已複製指令：${cmd}`);
+    }
+
+    // 複製純代碼
+    function copyRawCodes() {
+      if (selectedClinics.size === 0) return;
+      const codes = Array.from(selectedClinics.keys()).join(' ');
+      copyToClipboard(codes, `已複製 ${selectedClinics.size} 家院所代碼！`);
+    }
+
+    // 複製單一代碼
+    function copyCode(code) {
+      copyToClipboard(code, `已複製機構代碼：${code}`);
+    }
+
+    // 民眾版：LINE 查品質
+    function openLineForSingle(code, name) {
+      const textToCopy = `查品質 ${code}`;
+      copyToClipboard(textToCopy, `已複製「${textToCopy}」，正在開啟 LINE...`, () => {
+        // 跳轉至 LINE
+        let lineUrl = 'https://line.me/R/';
+        if (LINE_OA_ID) {
+          const cleanId = LINE_OA_ID.replace('@', '');
+          lineUrl = `https://line.me/R/oaMessage/@${cleanId}/?${encodeURIComponent(textToCopy)}`;
+        }
+        window.open(lineUrl, '_blank');
+      });
+    }
+
+    // 民眾/醫師版：Telegram 查品質
+    function openTgForSingle(code, name) {
+      const cmd = `/quality ${code}`;
+      copyToClipboard(cmd, `已複製「${cmd}」，正在開啟 Telegram...`, () => {
+        const tgUrl = `https://t.me/${TG_BOT_NAME}`;
+        window.open(tgUrl, '_blank');
+      });
+    }
+
+    // 剪貼簿操作
+    function copyToClipboard(text, successMsg, callback) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg, 'success');
+          if (callback) setTimeout(callback, 400);
+        }).catch(() => fallbackCopy(text, successMsg, callback));
+      } else {
+        fallbackCopy(text, successMsg, callback);
+      }
+    }
+
+    function fallbackCopy(text, successMsg, callback) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg, 'success');
+        if (callback) setTimeout(callback, 400);
+      } catch (err) {
+        showToast('複製失敗，請手動複製', 'info');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // 吐司通知
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 2600);
+    }
+
+    // 渲染分頁
+    function renderPagination(total) {
+      const totalPages = Math.ceil(total / pageSize);
+      const start = (currentPage - 1) * pageSize + 1;
+      const end = Math.min(currentPage * pageSize, total);
+      document.getElementById('pageInfo').textContent = `顯示第 ${start.toLocaleString()} 至 ${end.toLocaleString()} 筆，共 ${total.toLocaleString()} 家院所`;
+
+      const box = document.getElementById('pageButtons');
+      box.innerHTML = '';
+
+      const createBtn = (text, page, isActive = false, isDisabled = false) => {
+        const btn = document.createElement('button');
+        btn.className = `page-btn ${isActive ? 'active' : ''}`;
+        btn.innerHTML = text;
+        btn.disabled = isDisabled;
+        btn.onclick = () => {
+          currentPage = page;
+          renderContent();
+          window.scrollTo({ top: 380, behavior: 'smooth' });
+        };
+        return btn;
+      };
+
+      box.appendChild(createBtn('&laquo;', 1, false, currentPage === 1));
+      box.appendChild(createBtn('&lsaquo;', currentPage - 1, false, currentPage === 1));
+
+      // 頁碼區間
+      let startP = Math.max(1, currentPage - 2);
+      let endP = Math.min(totalPages, currentPage + 2);
+      for (let p = startP; p <= endP; p++) {
+        box.appendChild(createBtn(p, p, p === currentPage));
+      }
+
+      box.appendChild(createBtn('&rsaquo;', currentPage + 1, false, currentPage === totalPages));
+      box.appendChild(createBtn('&raquo;', totalPages, false, currentPage === totalPages));
+    }
+
+    // 網址參數初始化 (Deep Link)
+    function applyUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'doctor') {
+        setMode('doctor');
+      }
+      if (params.get('city')) {
+        document.getElementById('citySelect').value = params.get('city');
+        onCityChange();
+      }
+      if (params.get('keyword')) {
+        document.getElementById('keywordInput').value = params.get('keyword');
+      }
+    }
+
+    // 彈窗操作
+    function openDeployGuide() {
+      document.getElementById('deployModal').classList.add('show');
+    }
+    function closeDeployGuide() {
+      document.getElementById('deployModal').classList.remove('show');
+    }
+    function openSettingsModal() {
+      document.getElementById('tgBotInput').value = TG_BOT_NAME;
+      document.getElementById('lineOaInput').value = LINE_OA_ID;
+      document.getElementById('settingsModal').classList.add('show');
+    }
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('show');
+    }
+    function saveSettings() {
+      TG_BOT_NAME = document.getElementById('tgBotInput').value.trim() || 'WellcomeClinic_bot';
+      LINE_OA_ID = document.getElementById('lineOaInput').value.trim();
+      localStorage.setItem('tg_bot', TG_BOT_NAME);
+      localStorage.setItem('line_oa', LINE_OA_ID);
+      closeSettingsModal();
+      showToast('設定已成功儲存！', 'success');
+    }
+
+    // 工具函式
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeJs(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+  </script>
+</body>
+</html>

@@ -932,7 +932,7 @@
       <button class="drawer-btn drawer-btn-tg" onclick="openDoctorJoinModal()">
         🔵 加入【診所醫師AI服務】TG群 / 執行比對
       </button>
-      <a class="drawer-btn btn-line" id="drawerLineBtn" href="https://line.me/R/" target="_blank">
+      <a class="drawer-btn btn-line" id="drawerLineBtn" href="https://line.23092807.com" target="_blank">
         🟢 開啟 LINE 官方帳號
       </a>
     </div>
@@ -968,7 +968,7 @@
         <div class="step-num">1</div>
         <div class="step-content">
           <h4>告知真實醫院/診所身分</h4>
-          <p>請先透過 Facebook 私訊或 LINE 告知鄭維理院長您的真實服務機構與姓名。</p>
+          <p>請先透過 Facebook 私訊或 <a href="https://line.23092807.com" target="_blank" style="color: var(--primary); font-weight: 700; text-decoration: underline;">LINE 官方帳號 (點此開啟)</a> 告知鄭維理院長您的真實服務機構與姓名。</p>
         </div>
       </div>
 
@@ -1404,14 +1404,8 @@
     // 民眾版：LINE 查品質
     function openLineForSingle(code, name) {
       const textToCopy = `查品質 ${code}`;
-      copyToClipboard(textToCopy, `已複製「${textToCopy}」，正在開啟 LINE...`, () => {
-        // 跳轉至 LINE
-        let lineUrl = 'https://line.me/R/';
-        if (LINE_OA_ID) {
-          const cleanId = LINE_OA_ID.replace('@', '');
-          lineUrl = `https://line.me/R/oaMessage/@${cleanId}/?${encodeURIComponent(textToCopy)}`;
-        }
-        window.open(lineUrl, '_blank');
+      copyToClipboard(textToCopy, `已複製「${textToCopy}」，正在開啟 LINE 官方帳號，請於對話框貼上送出！`, () => {
+        window.open('https://line.23092807.com', '_blank');
       });
     }
 

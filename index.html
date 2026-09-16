@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>全台糖尿病院所品質查詢與比對器 (115年Q1)</title>
-  <meta name="description" content="全台7,765家糖尿病院所即時篩選、照護品質排序與評比。民眾輕鬆找身邊優質慢病診所，醫師一鍵勾選最多10家產生Telegram與Line Bot品質比對指令。">
+  <meta name="description" content="全台7,765家糖尿病院所即時篩選、照護品質排序與評比。民眾輕鬆找身邊優質慢病診所，醫師一鍵勾選最多10家產生健保品質比對指令。">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -807,8 +807,6 @@
         </div>
       </a>
       <div class="header-actions">
-        <button class="btn-icon" onclick="openDeployGuide()" title="免費發布至 GitHub/網頁教學">🚀</button>
-        <button class="btn-icon" onclick="openSettingsModal()" title="自訂機器人設定">⚙️</button>
         <button class="btn-icon" id="themeToggle" onclick="toggleTheme()" title="切換深色/淺色模式">🌙</button>
       </div>
     </div>
@@ -818,10 +816,10 @@
   <div class="mode-switch-wrapper">
     <div class="mode-switch">
       <button class="mode-btn active" id="btnModePublic" onclick="setMode('public')">
-        <span>🟢</span> 民眾版 (找好診所 · 單選複製)
+        <span>🟢</span> 民眾版 (找好診所 · 單選複製 · LINE查品質)
       </button>
       <button class="mode-btn" id="btnModeDoctor" onclick="setMode('doctor')">
-        <span>👨‍⚕️</span> 醫師版 (品質比對 · 勾選上限10家)
+        <span>👨‍⚕️</span> 醫師版 (品質比對 · 勾選上限10家 · 專屬AI服務)
       </button>
     </div>
   </div>
@@ -931,9 +929,9 @@
       <button class="drawer-btn btn-copy" onclick="copyRawCodes()">
         📄 複製純代碼 (空白分開)
       </button>
-      <a class="drawer-btn drawer-btn-tg" id="drawerTgBtn" href="https://t.me/WellcomeClinic_bot" target="_blank">
-        🔵 開啟 Telegram 機器人
-      </a>
+      <button class="drawer-btn drawer-btn-tg" onclick="openDoctorJoinModal()">
+        🔵 加入【診所醫師AI服務】TG群 / 執行比對
+      </button>
       <a class="drawer-btn btn-line" id="drawerLineBtn" href="https://line.me/R/" target="_blank">
         🟢 開啟 LINE 官方帳號
       </a>
@@ -943,62 +941,61 @@
   <!-- 吐司通知 -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- 免費部署教學 Modal -->
-  <div class="modal-backdrop" id="deployModal" onclick="closeDeployGuide(event)">
+  <!-- 醫師專屬 Telegram AI 服務審核須知 Modal -->
+  <div class="modal-backdrop" id="doctorJoinModal" onclick="closeDoctorJoinModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h3 class="modal-title">🚀 100% 永久免費網頁發布指南</h3>
-        <button class="modal-close" onclick="closeDeployGuide()">&times;</button>
+        <h3 class="modal-title">🏥【診所醫師 AI 服務】Telegram 私密群組</h3>
+        <button class="modal-close" onclick="closeDoctorJoinModal()">&times;</button>
       </div>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 18px;">
-        本系統為純靜態單一頁面（無任何伺服器成本），可以直接放上免費的雲端平台，全世界任何人都能隨時用手機點開使用！
-      </p>
+      
+      <div style="background: var(--primary-light); padding: 14px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; border-left: 4px solid var(--primary);">
+        <strong style="color: var(--primary-dark); font-size: 0.98rem; display: block; margin-bottom: 4px;">🔒 實名醫師審核制 · 謝絕陌生人與廣告干擾</strong>
+        <p style="font-size: 0.86rem; color: var(--text-sub); line-height: 1.6;">
+          本服務為<strong>萬華衛康內科診所</strong>專門為醫療同儕建立之 Telegram AI 智能助理服務。提供 1~10 家院所健保公開品質即時比對，並自動私密發送 <strong>HTML 互動儀表板、CSV 報表與 Markdown 摘要</strong>。
+        </p>
+      </div>
+
+      <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 18px;">
+        <strong style="color: #b91c1c; font-size: 0.92rem;">⚠️ 入群前必讀重要提醒：</strong>
+        <p style="font-size: 0.85rem; color: #991b1b; margin-top: 4px; line-height: 1.6;">
+          為確保群組內皆為同儕醫師與醫療專業人員，<strong>未經身分確認者恕不核准加入</strong>。<br>
+          請務必先透過 <strong>Facebook 私訊</strong> 或 <strong>LINE</strong> 告知鄭院長您的<strong>「真實服務醫院/診所名稱與醫師姓名」</strong>，審核通過後即可立即啟用完整 AI 品質服務！
+        </p>
+      </div>
 
       <div class="guide-step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <h4>方案 A：使用 GitHub Pages（最推薦 · 3 分鐘完成）</h4>
-          <p>1. 在 GitHub 建立一個公開倉庫（如 <code>dm-quality-finder</code>）。<br>
-             2. 把本目錄下的 <code>index.html</code> 與 <code>dm_clinics_data.js</code> 上傳。<br>
-             3. 進入 <strong>Settings ➔ Pages</strong>，選擇 <code>main</code> 分支儲存，即可獲得免費專屬網址！</p>
-          <div class="step-code">網址範例：https://&lt;您的GitHub帳號&gt;.github.io/dm-quality-finder/</div>
+          <h4>告知真實醫院/診所身分</h4>
+          <p>請先透過 Facebook 私訊或 LINE 告知鄭維理院長您的真實服務機構與姓名。</p>
         </div>
       </div>
 
       <div class="guide-step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <h4>方案 B：使用 Cloudflare Pages（免打指令 · 拖拉即用）</h4>
-          <p>進入 Cloudflare 官網 ➔ Pages ➔ Direct Upload，將此資料夾拖拉放進瀏覽器，即可取得全球極速 CDN 免費網址，支援自訂網域！</p>
+          <h4>前往 Telegram 送出入群申請或開啟機器人</h4>
+          <p>若您剛剛有勾選院所，系統已自動為您複製好 <code>/quality</code> 指令碼！點擊下方按鈕前往 Telegram，向機器人私聊發送 <code>/start</code> 或送出群組加入申請。</p>
         </div>
       </div>
 
       <div class="guide-step">
         <div class="step-num">3</div>
         <div class="step-content">
-          <h4>方案 C：電腦本機直接雙擊開啟</h4>
-          <p>只要雙擊 <code>index.html</code>，無需架設任何 Apache/Nginx 伺服器，即可完全離線瀏覽 7,765 家院所數據！</p>
+          <h4>鄭院長手動審核核准</h4>
+          <p>鄭院長核對身分無誤後，將於後台點擊 Approve 核准入群，您即可隨時享受零干擾、三合一報表私密推送的專業服務！</p>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- 機器人設定 Modal -->
-  <div class="modal-backdrop" id="settingsModal" onclick="closeSettingsModal(event)">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h3 class="modal-title">⚙️ 機器人串接參數設定</h3>
-        <button class="modal-close" onclick="closeSettingsModal()">&times;</button>
+      <div style="margin-top: 22px; display: flex; flex-direction: column; gap: 10px;">
+        <a class="drawer-btn drawer-btn-tg" style="width: 100%; text-decoration: none; justify-content: center; height: 44px; font-weight: 700; font-size: 0.95rem;" href="https://t.me/WellcomeClinic_bot?start=doctor" target="_blank" onclick="onDoctorTgClick()">
+          🔵 前往 Telegram 機器人 / 入群申請
+        </a>
+        <button class="drawer-btn btn-copy" style="width: 100%; justify-content: center; height: 40px;" onclick="closeDoctorJoinModal()">
+          關閉返回
+        </button>
       </div>
-      <div class="input-group" style="margin-bottom: 14px;">
-        <label class="input-label" for="tgBotInput">Telegram Bot Username (不含 @)</label>
-        <input type="text" id="tgBotInput" class="search-input" value="WellcomeClinic_bot">
-      </div>
-      <div class="input-group" style="margin-bottom: 14px;">
-        <label class="input-label" for="lineOaInput">LINE 官方帳號 ID (例如：@weikang 或留空)</label>
-        <input type="text" id="lineOaInput" class="search-input" placeholder="例如：@23092807 或 line.23092807.com">
-      </div>
-      <button class="btn-action btn-line" style="width: 100%; height: 42px; margin-top: 10px;" onclick="saveSettings()">儲存設定並套用</button>
     </div>
   </div>
 
@@ -1014,8 +1011,8 @@
     let selectedClinics = new Map(); // code -> { code, name, city, dist, rate, num }
     const MAX_DOCTOR_SELECT = 10;
 
-    let TG_BOT_NAME = localStorage.getItem('tg_bot') || 'WellcomeClinic_bot';
-    let LINE_OA_ID = localStorage.getItem('line_oa') || '';
+    let TG_BOT_NAME = 'WellcomeClinic_bot';
+    let LINE_OA_ID = '';
 
     // 資料解析對照
     // item: [0:code, 1:name, 2:city, 3:dist, 4:category, 5:num, 6:den, 7:rk_vol, 8:rk_rate, 9:rate, 10:div_avg]
@@ -1086,7 +1083,15 @@
         banner.innerHTML = '🟢 <strong>【民眾模式】</strong>：適合民眾尋找在地優質糖尿病院所。點擊任一院所可<strong>複製單一代碼</strong>，或一鍵開啟 <strong>LINE Bot 查詢品質</strong>！';
         pageSize = 24;
       } else {
-        banner.innerHTML = '👨‍⚕️ <strong>【醫師模式】</strong>：提供詳細同儕排名數據。點擊核取方塊<strong>自由勾選 1~10 家院所</strong>，底端常駐操作列將自動為您生成 <code>/quality</code> 比對指令！';
+        banner.innerHTML = `
+          <div>
+            👨‍⚕️ <strong>【醫師模式】</strong>：提供全台院所詳細同儕排名。點擊核取方塊<strong>自由勾選 1~10 家院所</strong>，底端面板自動生成 <code>/quality</code> 比對指令！
+          </div>
+          <div style="margin-top: 8px; padding: 8px 12px; background: rgba(239, 68, 68, 0.08); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.25); font-size: 0.85rem; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.1rem;">🔒</span>
+            <span><strong>【診所醫師AI服務】Telegram 私密群組審核提醒：</strong> 本服務採實名審核制。加入前<strong>必須先透過 FB 或 LINE 告知鄭院長您的「真實醫院/診所與醫師身分」</strong>，核准後方可啟用 AI 比對服務！</span>
+          </div>
+        `;
         pageSize = 30;
       }
       currentPage = 1;
@@ -1242,9 +1247,6 @@
             <div class="card-actions">
               <button class="btn-action btn-line" onclick="openLineForSingle('${code}', '${escapeJs(name)}')">
                 🟢 LINE 查品質
-              </button>
-              <button class="btn-action btn-tg" onclick="openTgForSingle('${code}', '${escapeJs(name)}')">
-                🔵 TG 查品質
               </button>
               <button class="btn-action btn-copy" onclick="copyCode('${code}')">
                 📋 複製代碼
@@ -1413,14 +1415,7 @@
       });
     }
 
-    // 民眾/醫師版：Telegram 查品質
-    function openTgForSingle(code, name) {
-      const cmd = `/quality ${code}`;
-      copyToClipboard(cmd, `已複製「${cmd}」，正在開啟 Telegram...`, () => {
-        const tgUrl = `https://t.me/${TG_BOT_NAME}`;
-        window.open(tgUrl, '_blank');
-      });
-    }
+
 
     // 剪貼簿操作
     function copyToClipboard(text, successMsg, callback) {
@@ -1519,28 +1514,21 @@
       }
     }
 
-    // 彈窗操作
-    function openDeployGuide() {
-      document.getElementById('deployModal').classList.add('show');
+    // 醫師專屬 Telegram AI 服務 Modal
+    function openDoctorJoinModal() {
+      if (selectedClinics.size > 0) {
+        const codes = Array.from(selectedClinics.keys()).join(' ');
+        const cmd = `/quality ${codes}`;
+        copyToClipboard(cmd, `已為您複製指令「${cmd}」，請於入群後貼上查詢！`);
+      }
+      document.getElementById('doctorJoinModal').classList.add('show');
     }
-    function closeDeployGuide() {
-      document.getElementById('deployModal').classList.remove('show');
+    function closeDoctorJoinModal(e) {
+      if (e && e.target !== e.currentTarget && !e.target.classList.contains('modal-close') && e.target.tagName !== 'BUTTON') return;
+      document.getElementById('doctorJoinModal').classList.remove('show');
     }
-    function openSettingsModal() {
-      document.getElementById('tgBotInput').value = TG_BOT_NAME;
-      document.getElementById('lineOaInput').value = LINE_OA_ID;
-      document.getElementById('settingsModal').classList.add('show');
-    }
-    function closeSettingsModal() {
-      document.getElementById('settingsModal').classList.remove('show');
-    }
-    function saveSettings() {
-      TG_BOT_NAME = document.getElementById('tgBotInput').value.trim() || 'WellcomeClinic_bot';
-      LINE_OA_ID = document.getElementById('lineOaInput').value.trim();
-      localStorage.setItem('tg_bot', TG_BOT_NAME);
-      localStorage.setItem('line_oa', LINE_OA_ID);
-      closeSettingsModal();
-      showToast('設定已成功儲存！', 'success');
+    function onDoctorTgClick() {
+      showToast('正在前往 Telegram 機器人...', 'success');
     }
 
     // 工具函式

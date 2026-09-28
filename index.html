@@ -803,14 +803,36 @@
         <div class="brand-icon">🩸</div>
         <div>
           <span class="brand-title">全台糖尿病院所品質查詢器</span>
-          <span class="brand-badge">115年 Q1</span>
+          <span class="brand-badge" id="brandBadge">115年 Q1</span>
         </div>
       </a>
       <div class="header-actions">
+        <a href="county_stats.html" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg, #0284c7, #10b981); color:#fff; font-size:0.84rem; font-weight:700; padding:6px 14px; border-radius:9999px; text-decoration:none; box-shadow:0 2px 8px rgba(2,132,199,0.3); transition:all 0.2s;" title="查閱 115Q1 各縣市糖尿病在醫院與診所人數及品質均值全覽">
+          <span>📊 各縣市品質全覽</span>
+        </a>
+        <a href="champions.html" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-size:0.84rem; font-weight:700; padding:6px 14px; border-radius:9999px; text-decoration:none; box-shadow:0 2px 8px rgba(245,158,11,0.3); transition:all 0.2s;" title="查閱 115Q1 各縣市糖尿病收案冠軍診所名單">
+          <span>🏆 各縣市冠軍榜</span>
+        </a>
+        <a href="ai_team.html" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg, #0d9488, #2563eb); color:#fff; font-size:0.84rem; font-weight:700; padding:6px 14px; border-radius:9999px; text-decoration:none; box-shadow:0 2px 8px rgba(13,148,136,0.3); transition:all 0.2s;" title="查閱全體 AI 團隊致院長的公開貢獻報告">
+          <span>🤖 AI團隊貢獻</span>
+        </a>
         <button class="btn-icon" id="themeToggle" onclick="toggleTheme()" title="切換深色/淺色模式">🌙</button>
       </div>
     </div>
   </header>
+
+  <!-- 115Q1 各縣市冠軍榜公告橫幅 (分級醫療 · 在地就醫) -->
+  <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0d9488 100%); color: #fff; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.12);">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 0.88rem;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="background: #f59e0b; color: #fff; padding: 2px 8px; border-radius: 9999px; font-weight: 800; font-size: 0.74rem; letter-spacing: 0.02em;">特別企劃</span>
+        <span>🏆 <strong>115Q1 全台 22 縣市糖尿病收案冠軍診所名單</strong>現已公開！落實分級醫療，免奔波大醫院，糖友安心在地就醫。</span>
+      </div>
+      <a href="champions.html" style="background: #fff; color: #0f766e; padding: 4px 14px; border-radius: 9999px; font-weight: 800; text-decoration: none; font-size: 0.82rem; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
+        查閱 22 縣市冠軍名單 ➜
+      </a>
+    </div>
+  </div>
 
   <!-- 雙模式切換器 -->
   <div class="mode-switch-wrapper">
@@ -1023,11 +1045,21 @@
 
     // 初始化
     window.addEventListener('DOMContentLoaded', () => {
+      initMetaLabels();
       initTheme();
       initCityDropdown();
       applyUrlParams();
       filterAndRender();
     });
+
+    // 動態綁定資料期別
+    function initMetaLabels() {
+      const q = META.updated || '115Q1';
+      const label = q.includes('年') ? q : `${q.slice(0, 3)}年 ${q.slice(3)}`;
+      const badge = document.getElementById('brandBadge');
+      if (badge) badge.textContent = label;
+      document.title = `全台糖尿病院所品質查詢與比對器 (${label})`;
+    }
 
     // 主題初始化與切換
     function initTheme() {

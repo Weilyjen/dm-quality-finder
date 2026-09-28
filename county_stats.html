@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>各縣市糖尿病患者在全部醫院與全部診所人數及品質數據全覽 - 115Q1健保品質</title>
+  <meta name="description" content="健保署115年第1季官方公開品質評比：全台22縣市糖尿病患者在全部醫院與全部診所的人數規模、收案人數、加權照護率、院所平均照護率與分級醫療結構大數據分析。">
+  <meta name="keywords" content="糖尿病, 醫療品質, 115Q1, 健保署, 醫院, 診所, 加權照護率, 分級醫療, 游能俊診所, 糖尿病照護方案">
+
+  <!-- Open Graph Meta -->
+  <meta property="og:title" content="全台各縣市糖尿病患者在全部醫院與全部診所人數及品質數據全覽 - 115Q1健保品質">
+  <meta property="og:description" content="全台22縣市、7,765家院所、192萬糖尿病患者大數據！全台醫院與診所照護品質均值對照、收案涵蓋率與分級醫療透視。">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-light: #e0f2fe;
+      --primary-hover: #0369a1;
+      --primary-glow: rgba(2, 132, 199, 0.28);
+      
+      --hosp-color: #38bdf8;
+      --hosp-bg: rgba(56, 189, 248, 0.12);
+      --hosp-border: rgba(56, 189, 248, 0.35);
+      
+      --clin-color: #10b981;
+      --clin-bg: rgba(16, 185, 129, 0.12);
+      --clin-border: rgba(16, 185, 129, 0.35);
+      
+      --gold: #f59e0b;
+      --gold-bg: rgba(245, 158, 11, 0.12);
+      --danger: #ef4444;
+      
+      --bg: #090d16;
+      --bg-alt: #0e1526;
+      --card-bg: rgba(18, 25, 42, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(56, 189, 248, 0.4);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-sub: #cbd5e1;
+      
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+      
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-full: 9999px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-alt: #f1f5f9;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-hover-border: rgba(2, 132, 199, 0.5);
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-sub: #334155;
+      --hosp-bg: rgba(2, 132, 199, 0.08);
+      --clin-bg: rgba(16, 185, 129, 0.08);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Outfit', 'Noto Sans TC', -apple-system, sans-serif;
+      background: var(--bg);
+      background-image: 
+        radial-gradient(at 15% 15%, rgba(2, 132, 199, 0.08) 0px, transparent 50%),
+        radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    /* Sticky Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 24px;
+      transition: var(--transition);
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      line-height: 1.25;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-sub);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn:hover {
+      background: var(--hosp-bg);
+      border-color: var(--card-hover-border);
+      color: var(--hosp-color);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+
+    .theme-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 28px auto 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .hero-badge-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      background: rgba(2, 132, 199, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      font-size: 12.5px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      font-size: 30px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    /* Executive KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--hosp-color), var(--clin-color));
+    }
+
+    .kpi-card.gold::before { background: var(--gold); }
+    .kpi-card.clin::before { background: var(--clin-color); }
+
+    .kpi-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-val {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .kpi-desc {
+      font-size: 12.5px;
+      color: var(--text-sub);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .kpi-sub-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .badge-hosp { color: var(--hosp-color); font-weight: 700; }
+    .badge-clin { color: var(--clin-color); font-weight: 700; }
+
+    /* Controls Panel */
+    .controls-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .controls-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .search-box-wrap {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 16px 10px 38px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      border-color: var(--hosp-color);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .select-wrap {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .custom-select {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      outline: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .custom-select:focus {
+      border-color: var(--hosp-color);
+    }
+
+    .btn-export {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+    }
+
+    .btn-export:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.5);
+    }
+
+    .filter-chips-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--card-border);
+      padding-top: 14px;
+    }
+
+    .chip-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .chip-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-sub);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .chip-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    .chip-btn.active {
+      background: rgba(2, 132, 199, 0.18);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .view-toggle-group {
+      display: inline-flex;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .view-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 7px 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .view-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Cards Grid View */
+    .county-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 18px;
+    }
+
+    .county-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .county-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--card-hover-border);
+      box-shadow: var(--shadow);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .card-city-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .city-rank-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-sub);
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .city-rank-badge.top1 { background: #f59e0b; color: #fff; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4); }
+    .city-rank-badge.top2 { background: #94a3b8; color: #fff; }
+    .city-rank-badge.top3 { background: #b45309; color: #fff; }
+
+    .city-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .city-region-tag {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .tier-badge {
+      font-size: 11.5px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    /* Core Stats Box */
+    .card-stats-box {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-col-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .stat-col-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .stat-col-val.highlight {
+      color: #38bdf8;
+    }
+
+    /* Visual Ratio Bar */
+    .ratio-section {
+      margin-bottom: 14px;
+    }
+
+    .ratio-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .ratio-bar-track {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      display: flex;
+    }
+
+    .ratio-bar-hosp {
+      background: linear-gradient(90deg, #0284c7, #38bdf8);
+      height: 100%;
+      transition: width 0.6s ease;
+    }
+
+    .ratio-bar-clin {
+      background: linear-gradient(90deg, #10b981, #34d399);
+      height: 100%;
+      transition: width 0.6s ease;
+    }
+
+    /* Comparison Sub Table inside Card */
+    .card-detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .card-detail-table th {
+      color: var(--text-muted);
+      text-align: left;
+      font-weight: 600;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-detail-table td {
+      padding: 6px 0;
+      font-weight: 600;
+    }
+
+    .card-detail-table .num-cell {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-footer-cta {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #38bdf8;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    /* Table View */
+    .table-responsive {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      text-align: left;
+    }
+
+    .stats-table th {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-sub);
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--card-border);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .stats-table th:hover {
+      color: #38bdf8;
+    }
+
+    .stats-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stats-table tr:hover {
+      background: rgba(56, 189, 248, 0.04);
+      cursor: pointer;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 840px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      animation: modalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text);
+    }
+
+    .modal-section-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-sub);
+      margin: 20px 0 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-hosp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .sub-tier-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .sub-tier-name { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
+    .sub-tier-val { font-size: 16px; font-weight: 800; color: var(--text); }
+    .sub-tier-rate { font-size: 12px; color: #38bdf8; font-weight: 700; margin-top: 2px; }
+
+    .top-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .top-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .top-name { font-weight: 700; color: var(--text); }
+    .top-sub { font-size: 11.5px; color: var(--text-muted); }
+    .top-stat { text-align: right; }
+    .top-num { font-weight: 800; color: #10b981; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--card-border);
+      line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+      .header-inner { flex-direction: column; align-items: stretch; }
+      .nav-links { justify-content: space-between; }
+      .hero h1 { font-size: 24px; }
+      .county-grid { grid-template-columns: 1fr; }
+      .modal-hosp-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Header -->
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-logo">🩸</div>
+        <div>
+          <div class="brand-title">全台各縣市糖尿病醫療品質全覽</div>
+          <div class="brand-subtitle">115年第1季官方數據 · 醫院 vs 診所大數據</div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-btn">
+          <span>🔍</span> 院所查詢比對
+        </a>
+        <a href="champions.html" class="nav-btn">
+          <span>🏆</span> 各縣市收案冠軍榜
+        </a>
+        <a href="https://weilyjen.github.io/nhi-gp/" class="nav-btn">
+          <span>🏥</span> 西醫門診全覽
+        </a>
+        <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="切換深色/淺色主題">
+          🌙
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    
+    <!-- Hero Title -->
+    <div class="hero">
+      <div class="hero-badge-wrap">
+        <span>🏛️ 衛生福利部中央健康保險署公開品質評比</span>
+        <span>·</span>
+        <span>115Q1 官方正式版</span>
+      </div>
+      <h1>各縣市糖尿病患者在全部醫院與全部診所人數及品質均值</h1>
+      <p>涵蓋全台 22 縣市、7,765 家西醫醫事機構（413 家醫院 + 7,352 家基層診所）與 1,916,370 名就醫患者，聚焦糖尿病專案收案與品質指標。</p>
+    </div>
+
+    <!-- Executive KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">
+          <span>全台糖尿病就診總人數</span>
+          <span>👥</span>
+        </div>
+        <div class="kpi-val" id="kpiTotalPatients">1,916,370</div>
+        <div class="kpi-desc">
+          <div class="kpi-sub-row">
+            <span>🏥 413 家醫院分母</span>
+            <span class="badge-hosp" id="kpiHospPatients">1,010,574 人 (52.7%)</span>
+          </div>
+          <div class="kpi-sub-row">
+            <span>🩺 7,352 家診所分母</span>
+            <span class="badge-clin" id="kpiClinPatients">905,796 人 (47.3%)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">
+          <span>糖尿病照護方案收案人數</span>
+          <span>📋</span>
+        </div>
+        <div class="kpi-val" id="kpiTotalEnrolled">960,992</div>
+        <div class="kpi-desc">
+          <div class="kpi-sub-row">
+            <span>🏥 醫院收案分子</span>
+            <span class="badge-hosp" id="kpiHospEnrolled">550,002 人 (57.2%)</span>
+          </div>
+          <div class="kpi-sub-row">
+            <span>🩺 診所收案分子</span>
+            <span class="badge-clin" id="kpiClinEnrolled">410,990 人 (42.8%)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card gold">
+        <div class="kpi-title">
+          <span>全台總體加權照護率</span>
+          <span>📈</span>
+        </div>
+        <div class="kpi-val" id="kpiNationalCareRate">50.15%</div>
+        <div class="kpi-desc">
+          <div class="kpi-sub-row">
+            <span>🏥 醫院加權品質均值</span>
+            <span class="badge-hosp" id="kpiHospCareRate">54.42%</span>
+          </div>
+          <div class="kpi-sub-row">
+            <span>🩺 診所加權品質均值</span>
+            <span class="badge-clin" id="kpiClinCareRate">45.37%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card clin">
+        <div class="kpi-title">
+          <span>基層專責診所照護均值</span>
+          <span>⭐</span>
+        </div>
+        <div class="kpi-val" id="kpiActiveClinAvgRate">66.76%</div>
+        <div class="kpi-desc">
+          <div class="kpi-sub-row">
+            <span>🩺 全台 P4P 專責診所數</span>
+            <span class="badge-clin" id="kpiActiveClinCount">1,372 家</span>
+          </div>
+          <div class="kpi-sub-row">
+            <span>🎯 專責診所品質中位數</span>
+            <span style="color:#10b981; font-weight:700;" id="kpiActiveClinMedRate">70.69%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div class="controls-panel">
+      <div class="controls-top">
+        <div class="search-box-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="搜尋縣市名稱 (例如: 臺北、高雄、宜蘭...)" oninput="handleSearch()">
+        </div>
+        <div class="select-wrap">
+          <select id="sortSelect" class="custom-select" onchange="handleSortChange()">
+            <option value="total_patients_desc">排序：患者總人數 (多 ➔ 少)</option>
+            <option value="total_care_rate_desc">排序：全縣加權照護率 (高 ➔ 低)</option>
+            <option value="clin_care_rate_desc">排序：診所加權照護率 (高 ➔ 低)</option>
+            <option value="hosp_care_rate_desc">排序：醫院加權照護率 (高 ➔ 低)</option>
+            <option value="clin_patient_share_desc">排序：診所患者佔比 (基層主導度高)</option>
+            <option value="clin_patients_desc">排序：診所患者人數 (多 ➔ 少)</option>
+            <option value="hosp_patients_desc">排序：醫院患者人數 (多 ➔ 少)</option>
+          </select>
+          <div class="view-toggle-group">
+            <button id="viewCardBtn" class="view-btn active" onclick="switchView('card')">📊 卡片</button>
+            <button id="viewTableBtn" class="view-btn" onclick="switchView('table')">📋 表格</button>
+          </div>
+          <button class="btn-export" onclick="exportCSV()">
+            <span>📥</span> 匯出 CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Region Filter Chips -->
+      <div class="filter-chips-row">
+        <span class="chip-label">區域分組：</span>
+        <button class="chip-btn active" onclick="filterRegion('ALL', this)">全部 (22)</button>
+        <button class="chip-btn" onclick="filterRegion('北部', this)">北部 (7)</button>
+        <button class="chip-btn" onclick="filterRegion('中部', this)">中部 (4)</button>
+        <button class="chip-btn" onclick="filterRegion('南部', this)">南部 (5)</button>
+        <button class="chip-btn" onclick="filterRegion('東部', this)">東部 (3)</button>
+        <button class="chip-btn" onclick="filterRegion('離島', this)">離島 (3)</button>
+      </div>
+    </div>
+
+    <!-- Active Filter Summary -->
+    <div style="margin-bottom: 16px; font-size: 13.5px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+      <div>共篩選出 <strong id="matchCount" style="color: #38bdf8;">22</strong> 個縣市數據</div>
+      <div style="font-size: 12px;">💡 點擊任一縣市卡片或表格列可展開「醫院詳細分級」與「Top 3 頂尖院所」</div>
+    </div>
+
+    <!-- Cards Container -->
+    <div id="cardsContainer" class="county-grid"></div>
+
+    <!-- Table Container -->
+    <div id="tableContainer" class="table-responsive" style="display: none;">
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th onclick="setSort('city')">縣市</th>
+            <th onclick="setSort('tier_type')">分級型態</th>
+            <th onclick="setSort('total_patients')">患者總人數</th>
+            <th onclick="setSort('total_care_rate')">全縣加權照護率</th>
+            <th onclick="setSort('hosp_patients')">醫院患者數</th>
+            <th onclick="setSort('hosp_care_rate')">醫院加權率</th>
+            <th onclick="setSort('clin_patients')">診所患者數</th>
+            <th onclick="setSort('clin_care_rate')">診所加權率</th>
+            <th onclick="setSort('clin_patient_share')">診所患者佔比</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- County Deep-Dive Modal -->
+  <div id="countyModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+        <h2 id="modalCityName" style="font-size: 26px; font-weight: 900; color: var(--text);"></h2>
+        <span id="modalTierBadge" class="tier-badge"></span>
+        <span id="modalRegionTag" class="city-region-tag"></span>
+      </div>
+      <p id="modalCityOverview" style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;"></p>
+
+      <!-- Macro Stats Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px solid var(--card-border);">
+          <div style="font-size: 11px; color: var(--text-muted);">糖尿病患者總規模</div>
+          <div id="modalTotalPts" style="font-size: 18px; font-weight: 800; color: var(--text);"></div>
+          <div id="modalRankPts" style="font-size: 11px; color: #38bdf8;"></div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px solid var(--card-border);">
+          <div style="font-size: 11px; color: var(--text-muted);">全縣加權照護率</div>
+          <div id="modalTotalRate" style="font-size: 18px; font-weight: 800; color: var(--text);"></div>
+          <div id="modalRankRate" style="font-size: 11px; color: #10b981;"></div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px solid var(--card-border);">
+          <div style="font-size: 11px; color: var(--text-muted);">醫院端照護規模</div>
+          <div id="modalHospPts" style="font-size: 18px; font-weight: 800; color: var(--hosp-color);"></div>
+          <div id="modalHospRate" style="font-size: 11px; color: var(--text-muted);"></div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px solid var(--card-border);">
+          <div style="font-size: 11px; color: var(--text-muted);">診所端照護規模</div>
+          <div id="modalClinPts" style="font-size: 18px; font-weight: 800; color: var(--clin-color);"></div>
+          <div id="modalClinRate" style="font-size: 11px; color: var(--text-muted);"></div>
+        </div>
+      </div>
+
+      <!-- Hospital Tier Breakdown -->
+      <div class="modal-section-title">
+        <span>🏥</span> 醫院各層級收案與患者結構
+      </div>
+      <div class="modal-hosp-grid">
+        <div class="sub-tier-box">
+          <div class="sub-tier-name">醫學中心 (Medical Center)</div>
+          <div class="sub-tier-val" id="modalMedCenterVal">0 家 · 0 人</div>
+          <div class="sub-tier-rate" id="modalMedCenterRate">照護率 0%</div>
+        </div>
+        <div class="sub-tier-box">
+          <div class="sub-tier-name">區域醫院 (Regional Hospital)</div>
+          <div class="sub-tier-val" id="modalRegHospVal">0 家 · 0 人</div>
+          <div class="sub-tier-rate" id="modalRegHospRate">照護率 0%</div>
+        </div>
+        <div class="sub-tier-box">
+          <div class="sub-tier-name">地區醫院 (District Hospital)</div>
+          <div class="sub-tier-val" id="modalDistHospVal">0 家 · 0 人</div>
+          <div class="sub-tier-rate" id="modalDistHospRate">照護率 0%</div>
+        </div>
+      </div>
+
+      <!-- Top Clinics -->
+      <div class="modal-section-title">
+        <span>🏆</span> 該縣市收案規模 Top 3 冠軍基層診所
+      </div>
+      <div id="modalTopClinicsList" class="top-list"></div>
+
+      <!-- Top Hospitals -->
+      <div class="modal-section-title" style="margin-top: 20px;">
+        <span>🏛️</span> 該縣市收案規模 Top 3 代表醫院
+      </div>
+      <div id="modalTopHospsList" class="top-list"></div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>資料來源：衛生福利部中央健康保險署「健保醫療品質資訊公開網 - 糖尿病病人加入照護方案比率」</p>
+    <p>統計母體：115年第1季（2026 Q1）全國 22 縣市、7,765 家西醫醫事機構 · 100% 官方真實公開數據</p>
+    <p style="margin-top: 8px;">
+      <a href="index.html" style="color: #38bdf8; text-decoration: underline; margin: 0 8px;">全台院所查詢</a>
+      <a href="champions.html" style="color: #38bdf8; text-decoration: underline; margin: 0 8px;">縣市冠軍榜</a>
+      <a href="https://weilyjen.github.io/nhi-gp/" style="color: #38bdf8; text-decoration: underline; margin: 0 8px;">基層門診全覽</a>
+    </p>
+  </footer>
+
+  <!-- 引入靜態 JSON 數據包 (支援本地離線直接雙擊) -->
+  <script src="county_dm_data.js"></script>
+
+  <script>
+    // 狀態模型
+    const state = {
+      data: (typeof COUNTY_DM_DATA !== 'undefined') ? COUNTY_DM_DATA.counties : [],
+      national: (typeof COUNTY_DM_DATA !== 'undefined') ? COUNTY_DM_DATA.national : {},
+      search: '',
+      region: 'ALL',
+      sortBy: 'total_patients_desc',
+      viewMode: 'card', // 'card' | 'table'
+      currentModalCity: null
+    };
+
+    // 初始化
+    document.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      renderAll();
+    });
+
+    // 主題初始化
+    function initTheme() {
+      const savedTheme = localStorage.getItem("dm_theme") || "dark";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      updateThemeBtn(savedTheme);
+    }
+
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute("data-theme");
+      const next = (cur === "dark") ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("dm_theme", next);
+      updateThemeBtn(next);
+    }
+
+    function updateThemeBtn(t) {
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = (t === "dark") ? "☀️" : "🌙";
+    }
+
+    // 篩選與排序邏輯
+    function getFilteredData() {
+      let list = [...state.data];
+
+      // 1. 搜尋
+      if (state.search.trim()) {
+        const q = state.search.trim().replace('台', '臺');
+        list = list.filter(c => c.city.includes(q) || c.region.includes(q) || c.tier_type.includes(q));
+      }
+
+      // 2. 地理區域
+      if (state.region !== 'ALL') {
+        list = list.filter(c => c.region === state.region);
+      }
+
+      // 3. 排序
+      list.sort((a, b) => {
+        switch (state.sortBy) {
+          case 'total_patients_desc': return b.total_patients - a.total_patients;
+          case 'total_patients_asc': return a.total_patients - b.total_patients;
+          case 'total_care_rate_desc': return b.total_care_rate - a.total_care_rate;
+          case 'clin_care_rate_desc': return b.clin_care_rate - a.clin_care_rate;
+          case 'hosp_care_rate_desc': return b.hosp_care_rate - a.hosp_care_rate;
+          case 'clin_patient_share_desc': return b.clin_patient_share - a.clin_patient_share;
+          case 'clin_patients_desc': return b.clin_patients - a.clin_patients;
+          case 'hosp_patients_desc': return b.hosp_patients - a.hosp_patients;
+          case 'city': return a.city.localeCompare(b.city, 'zh-TW');
+          default: return b.total_patients - a.total_patients;
+        }
+      });
+
+      return list;
+    }
+
+    // 渲染
+    function renderAll() {
+      const list = getFilteredData();
+      document.getElementById("matchCount").textContent = list.length;
+
+      if (state.viewMode === 'card') {
+        document.getElementById("cardsContainer").style.display = "grid";
+        document.getElementById("tableContainer").style.display = "none";
+        renderCards(list);
+      } else {
+        document.getElementById("cardsContainer").style.display = "none";
+        document.getElementById("tableContainer").style.display = "block";
+        renderTable(list);
+      }
+    }
+
+    // 渲染卡片
+    function renderCards(list) {
+      const container = document.getElementById("cardsContainer");
+      if (list.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">查無符合條件的縣市資料。</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map((c, idx) => {
+        const hospShare = (100 - c.clin_patient_share).toFixed(1);
+        const clinShare = c.clin_patient_share.toFixed(1);
+
+        let rankClass = '';
+        if (c.rank_patients === 1) rankClass = 'top1';
+        else if (c.rank_patients === 2) rankClass = 'top2';
+        else if (c.rank_patients === 3) rankClass = 'top3';
+
+        return `
+          <div class="county-card" onclick="openModal('${c.city}')">
+            <div>
+              <div class="card-header-row">
+                <div class="card-city-wrap">
+                  <div class="city-rank-badge ${rankClass}">#${c.rank_patients}</div>
+                  <div>
+                    <span class="city-name">${c.city}</span>
+                    <span class="city-region-tag">${c.region}</span>
+                  </div>
+                </div>
+                <span class="tier-badge" style="background:${c.tier_color}18; color:${c.tier_color}; border-color:${c.tier_color}40;">
+                  ${c.tier_type}
+                </span>
+              </div>
+
+              <!-- 總體人數與全縣加權照護率 -->
+              <div class="card-stats-box">
+                <div class="stat-col">
+                  <span class="stat-col-label">糖尿病總患者數</span>
+                  <span class="stat-col-val">${c.total_patients.toLocaleString()} 人</span>
+                </div>
+                <div class="stat-col" style="text-align: right;">
+                  <span class="stat-col-label">全縣加權照護率</span>
+                  <span class="stat-col-val highlight">${c.total_care_rate}%</span>
+                </div>
+              </div>
+
+              <!-- 患者雙軸分佈長條 (醫院 vs 診所) -->
+              <div class="ratio-section">
+                <div class="ratio-label-row">
+                  <span class="badge-hosp">🏥 醫院 ${hospShare}% (${c.hosp_patients.toLocaleString()})</span>
+                  <span class="badge-clin">診所 ${clinShare}% (${c.clin_patients.toLocaleString()}) 🩺</span>
+                </div>
+                <div class="ratio-bar-track">
+                  <div class="ratio-bar-hosp" style="width: ${hospShare}%;"></div>
+                  <div class="ratio-bar-clin" style="width: ${clinShare}%;"></div>
+                </div>
+              </div>
+
+              <!-- 明細數值迷你表格 -->
+              <table class="card-detail-table">
+                <thead>
+                  <tr>
+                    <th>醫療層級</th>
+                    <th class="num-cell">家數</th>
+                    <th class="num-cell">收案數</th>
+                    <th class="num-cell">加權照護率</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="badge-hosp">🏥 全部醫院</td>
+                    <td class="num-cell">${c.hosp_count}</td>
+                    <td class="num-cell">${c.hosp_enrolled.toLocaleString()}</td>
+                    <td class="num-cell" style="color:var(--hosp-color);">${c.hosp_care_rate}%</td>
+                  </tr>
+                  <tr>
+                    <td class="badge-clin">🩺 全部診所</td>
+                    <td class="num-cell">${c.clin_count}</td>
+                    <td class="num-cell">${c.clin_enrolled.toLocaleString()}</td>
+                    <td class="num-cell" style="color:var(--clin-color);">${c.clin_care_rate}%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="card-footer-cta">
+              <span>查看醫院層級與 Top3 院所 ❯</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 渲染表格
+    function renderTable(list) {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = list.map(c => `
+        <tr onclick="openModal('${c.city}')">
+          <td style="font-weight: 800;">
+            ${c.city}
+            <span class="city-region-tag" style="margin-left: 4px;">${c.region}</span>
+          </td>
+          <td>
+            <span class="tier-badge" style="background:${c.tier_color}18; color:${c.tier_color};">
+              ${c.tier_type}
+            </span>
+          </td>
+          <td style="font-weight: 700;">${c.total_patients.toLocaleString()}</td>
+          <td style="font-weight: 800; color: #38bdf8;">${c.total_care_rate}%</td>
+          <td>${c.hosp_patients.toLocaleString()}</td>
+          <td style="color: var(--hosp-color); font-weight: 700;">${c.hosp_care_rate}%</td>
+          <td>${c.clin_patients.toLocaleString()}</td>
+          <td style="color: var(--clin-color); font-weight: 700;">${c.clin_care_rate}%</td>
+          <td style="font-weight: 700;">${c.clin_patient_share}%</td>
+        </tr>
+      `).join('');
+    }
+
+    // 互動控制
+    function handleSearch() {
+      state.search = document.getElementById("searchInput").value;
+      renderAll();
+    }
+
+    function handleSortChange() {
+      state.sortBy = document.getElementById("sortSelect").value;
+      renderAll();
+    }
+
+    function setSort(field) {
+      if (state.sortBy === `${field}_desc`) {
+        state.sortBy = `${field}_asc`;
+      } else {
+        state.sortBy = `${field}_desc`;
+      }
+      renderAll();
+    }
+
+    function filterRegion(reg, btn) {
+      state.region = reg;
+      document.querySelectorAll(".chip-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderAll();
+    }
+
+    function switchView(mode) {
+      state.viewMode = mode;
+      document.getElementById("viewCardBtn").classList.toggle("active", mode === 'card');
+      document.getElementById("viewTableBtn").classList.toggle("active", mode === 'table');
+      renderAll();
+    }
+
+    // Modal 詳情彈窗
+    function openModal(cityName) {
+      const c = state.data.find(x => x.city === cityName);
+      if (!c) return;
+      state.currentModalCity = c;
+
+      document.getElementById("modalCityName").textContent = c.city;
+      document.getElementById("modalRegionTag").textContent = c.region;
+      
+      const badge = document.getElementById("modalTierBadge");
+      badge.textContent = c.tier_type;
+      badge.style.background = `${c.tier_color}18`;
+      badge.style.color = c.tier_color;
+      badge.style.borderColor = `${c.tier_color}40`;
+
+      document.getElementById("modalCityOverview").textContent = 
+        `${c.city}共 ${c.total_institutions} 家醫事機構，收案管理 ${c.total_enrolled.toLocaleString()} 人，診所患者涵蓋率達 ${c.clin_patient_share}%。`;
+
+      document.getElementById("modalTotalPts").textContent = `${c.total_patients.toLocaleString()} 人`;
+      document.getElementById("modalRankPts").textContent = `全國規模第 ${c.rank_patients} 名`;
+
+      document.getElementById("modalTotalRate").textContent = `${c.total_care_rate}%`;
+      document.getElementById("modalRankRate").textContent = `全國品質第 ${c.rank_care_rate} 名`;
+
+      document.getElementById("modalHospPts").textContent = `${c.hosp_patients.toLocaleString()} 人`;
+      document.getElementById("modalHospRate").textContent = `${c.hosp_count} 家醫院 · 加權率 ${c.hosp_care_rate}%`;
+
+      document.getElementById("modalClinPts").textContent = `${c.clin_patients.toLocaleString()} 人`;
+      document.getElementById("modalClinRate").textContent = `${c.clin_count} 家診所 · 加權率 ${c.clin_care_rate}%`;
+
+      // 醫院層級細分
+      const mb = c.breakdown_med_center;
+      document.getElementById("modalMedCenterVal").textContent = `${mb.count} 家 · ${mb.patients.toLocaleString()} 人`;
+      document.getElementById("modalMedCenterRate").textContent = mb.patients > 0 ? `照護率 ${(mb.enrolled/mb.patients*100).toFixed(1)}%` : '無此層級院所';
+
+      const rb = c.breakdown_reg_hosp;
+      document.getElementById("modalRegHospVal").textContent = `${rb.count} 家 · ${rb.patients.toLocaleString()} 人`;
+      document.getElementById("modalRegHospRate").textContent = rb.patients > 0 ? `照護率 ${(rb.enrolled/rb.patients*100).toFixed(1)}%` : '無此層級院所';
+
+      const db = c.breakdown_dist_hosp;
+      document.getElementById("modalDistHospVal").textContent = `${db.count} 家 · ${db.patients.toLocaleString()} 人`;
+      document.getElementById("modalDistHospRate").textContent = db.patients > 0 ? `照護率 ${(db.enrolled/db.patients*100).toFixed(1)}%` : '無此層級院所';
+
+      // Top Clinics
+      const clinListEl = document.getElementById("modalTopClinicsList");
+      clinListEl.innerHTML = c.top_clinics.map((item, i) => `
+        <div class="top-item">
+          <div>
+            <div class="top-name">#${i+1} ${item.name}</div>
+            <div class="top-sub">${item.dist || c.city} · 代碼: ${item.code}</div>
+          </div>
+          <div class="top-stat">
+            <div class="top-num">收案 ${item.num.toLocaleString()} 人</div>
+            <div class="top-sub">分母: ${item.den.toLocaleString()} (照護率 ${item.rate}%)</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Top Hospitals
+      const hospListEl = document.getElementById("modalTopHospsList");
+      hospListEl.innerHTML = c.top_hosps.map((item, i) => `
+        <div class="top-item">
+          <div>
+            <div class="top-name">#${i+1} ${item.name}</div>
+            <div class="top-sub">${item.type} · 代碼: ${item.code}</div>
+          </div>
+          <div class="top-stat">
+            <div class="top-num" style="color:#38bdf8;">收案 ${item.num.toLocaleString()} 人</div>
+            <div class="top-sub">分母: ${item.den.toLocaleString()} (照護率 ${item.rate}%)</div>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById("countyModal").classList.add("active");
+    }
+
+    function closeModal(e) {
+      if (!e || e.target.id === 'countyModal' || e.target.classList.contains('modal-close-btn')) {
+        document.getElementById("countyModal").classList.remove("active");
+      }
+    }
+
+    // 匯出 CSV
+    function exportCSV() {
+      let csv = "\uFEFF縣市,區域,分級型態,總患者數,總收案數,全縣加權照護率(%),醫院數,醫院患者數,醫院收案數,醫院加權照護率(%),診所數,診所患者數,診所收案數,診所加權照護率(%),診所患者佔比(%)\n";
+      state.data.forEach(c => {
+        csv += `"${c.city}","${c.region}","${c.tier_type}",${c.total_patients},${c.total_enrolled},${c.total_care_rate},${c.hosp_count},${c.hosp_patients},${c.hosp_enrolled},${c.hosp_care_rate},${c.clin_count},${c.clin_patients},${c.clin_enrolled},${c.clin_care_rate},${c.clin_patient_share}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Taiwan_County_DM_Quality_115Q1.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
